@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\GenreRepository")
@@ -15,16 +16,19 @@ class Genre
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"listGenreSimle","listGenreFull"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"listGenreSimle","listGenreFull"})
      */
     private $libelle;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Livre", mappedBy="genre")
+     * @Groups({"listGenreFull"})
      */
     private $livres;
 
@@ -79,5 +83,10 @@ class Genre
         }
 
         return $this;
+    }
+
+    public  function __toString()
+    {
+        return (string) $this->libelle;
     }
 }
