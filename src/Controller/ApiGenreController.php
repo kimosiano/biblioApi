@@ -9,6 +9,9 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\SerializerInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class ApiGenreController extends AbstractController
 {
@@ -32,17 +35,42 @@ class ApiGenreController extends AbstractController
     /**
      * @Route("/api/genres/{id}", name="api_genres_show", methods={"GET"})
      */
-    public function show(Genre $genre, SerializerInterface $serializer)
+    public function show(Genre $genre, SerializerInterface $serializer, GenreRepository $repo, $id)
     {
+        $genreX=$repo->findById($id);
+
+        //dump($genreX);dump($genre);die;
         $resultat=$serializer->serialize(
-            $genre,
+            $genreX[0],
             'json',
             [
-                'groups'=>['listGenreSimple']
+                'groups'=>['listGenreSimple']  
             ]
             
         );
        
         return new JsonResponse($resultat,Response::HTTP_OK,[],true);
+    }
+    /**
+     * @Route("/api/genres", name="api_genres_show", methods={"POST"})
+     */
+    public function create(Request $request, SerializerInterface $serializer, EntityManagerInterface $manager)
+    {
+        $data = $request->getContent();
+        //$genre=new Genre();
+        //$serializer->deserialize($data, Genre::class, 'json', ['object_to_populate'=>$genre]);
+        $genre=$serializer->deserialize($data, Genre::class, 'json');
+        //dump($genre);die;
+        $manager->persist($genre);
+        $manager->flush();
+        //dump($genreX);dump($genre);die;
+       
+        return new JsonResponse(
+            "le genre a bien été créé",
+            Response::HTTP_CREATED,
+            ["location"=>"api/genres/".$genre->getId()],
+            true
+        );
+        //["location"=>$this->generateUrl('api_genres_show', ["id"=>$genre->getId(), UrlGeneratorInterface::ABSOLUTE_PATH])]
     }
 }

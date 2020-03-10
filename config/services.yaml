@@ -21,7 +21,16 @@ services:
     # as action arguments even if you don't extend any base controller class
     App\Controller\:
         resource: '../src/Controller'
+        autowire: true
+        public: true
         tags: ['controller.service_arguments']
+
+    # Entity
+    App\Entity\:
+        resource: '../src/Entity/'
+        autowire: true
+        public: true
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+

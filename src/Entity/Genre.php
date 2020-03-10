@@ -16,13 +16,13 @@ class Genre
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"listGenreSimle","listGenreFull"})
+     * @Groups({"listGenreSimple","listGenreFull"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"listGenreSimle","listGenreFull"})
+     * @Groups({"listGenreSimple","listGenreFull"})
      */
     private $libelle;
 
