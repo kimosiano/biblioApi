@@ -2,11 +2,28 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
-
+use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\LivreRepository")
+ * @ApiResource(
+ *      attributes={
+ *          "order"={
+ *              "titre":"ASC",
+ *              "prix":"DESC"
+ *          }
+ * })
+ * @ApiFilter(
+ *      SearchFilter::class,
+ *      properties={
+ *          "titre": "ipartial",
+ *          "auteur": "exact"
+ *      }
+ * ) 
  */
 class Livre
 {
@@ -19,19 +36,16 @@ class Livre
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"listGenreFull"})
      */
     private $isbn;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"listGenreFull"})
      */
     private $titre;
 
     /**
      * @ORM\Column(type="float", nullable=true)
-     * @Groups({"listGenreFull"})
      */
     private $prix;
 
@@ -44,28 +58,34 @@ class Livre
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Editeur", inversedBy="livres")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"listGenreFull"})
      */
     private $editeur;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Auteur", inversedBy="livres")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"listGenreFull"})
      */
     private $auteur;
 
     /**
      * @ORM\Column(type="integer")
-     * @Groups({"listGenreFull"})
      */
     private $annee;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"listGenreFull"})
      */
     private $langue;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Pret", mappedBy="livre")
+     */
+    private $prets;
+
+    public function __construct()
+    {
+        $this->prets = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -171,5 +191,36 @@ class Livre
     public  function __toString()
     {
         return (string) $this->titre;
+    }
+
+    /**
+     * @return Collection|Pret[]
+     */
+    public function getPrets(): Collection
+    {
+        return $this->prets;
+    }
+
+    public function addPret(Pret $pret): self
+    {
+        if (!$this->prets->contains($pret)) {
+            $this->prets[] = $pret;
+            $pret->setLivre($this);
+        }
+
+        return $this;
+    }
+
+    public function removePret(Pret $pret): self
+    {
+        if ($this->prets->contains($pret)) {
+            $this->prets->removeElement($pret);
+            // set the owning side to null (unless already changed)
+            if ($pret->getLivre() === $this) {
+                $pret->setLivre(null);
+            }
+        }
+
+        return $this;
     }
 }

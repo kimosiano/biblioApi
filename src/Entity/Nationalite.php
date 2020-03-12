@@ -4,11 +4,17 @@ namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\NationaliteRepository")
+ * @ApiResource(
+ *      attributes={
+ *          "order"={
+ *              "libelle":"ASC"
+ *          }
+ * })
  */
 class Nationalite
 {
@@ -81,5 +87,10 @@ class Nationalite
         }
 
         return $this;
+    }
+
+    public function __toString()
+    {
+        return (string) $this->libelle;
     }
 }

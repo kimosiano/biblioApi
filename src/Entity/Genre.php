@@ -3,27 +3,50 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Annotation\ApiSubresource;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
+// * @ApiResource(
+//     *      itemOperations={
+//     *          "get_simple"={
+//     *              "method"="GET",
+//     *              "path"="/genres/{id}/simple",
+//     *              "normalization_context"={"groups"={"listGenreSimple"}}
+//     *          },
+//     *           "get_full"={
+//     *              "method"="GET",
+//     *              "path"="/genres/{id}/full",
+//     *              "normalization_context"={"groups"={"listGenreFull"}}
+//     *          }
+//     * },
+//     *      collectionOperations={"get"}
+//     * )
+
+
 
 /**
+ * 
  * @ORM\Entity(repositoryClass="App\Repository\GenreRepository")
- */
+ * @ApiResource(
+ *      attributes={
+ *          "order"={
+ *              "libelle":"ASC"
+ *          }
+ * }) 
+ * */
 class Genre
 {
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"listGenreSimple","listGenreFull"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"listGenreSimple","listGenreFull"})
      * @Assert\Length(
      *      min = 2,
      *      max = 50,
@@ -35,7 +58,7 @@ class Genre
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Livre", mappedBy="genre")
-     * @Groups({"listGenreFull"})
+     * @ApiSubresource
      */
     private $livres;
 

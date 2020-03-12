@@ -3,12 +3,14 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use ApiPlatform\Core\Annotation\ApiResource;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\AuteurRepository")
+ * @ApiResource()
  */
 class Auteur
 {
@@ -34,7 +36,6 @@ class Auteur
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\Nationalite", inversedBy="auteurs")
      * @ORM\JoinColumn(nullable=false)
-     * @Groups({"listGenreFull"})
      */
     private $Relation;
 
