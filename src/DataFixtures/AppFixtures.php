@@ -8,15 +8,18 @@ use App\Entity\Pret;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use Faker\Factory;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 class AppFixtures extends Fixture
 {
     private $manager;
     private $faker;
     private $repoLivre;
-    public function __construct()
+    private $passwordEncoder;
+    public function __construct(UserPasswordEncoderInterface $passwordEncoder)
     {
         $this->faker=Factory::create("fr_FR");
+        $this->passwordEncoder = $passwordEncoder;
     }
     public function load(ObjectManager $manager)
     {
@@ -48,7 +51,7 @@ class AppFixtures extends Fixture
                         ->setTelephone($this->faker->phoneNumber())
                         ->setCodeCommune($commune[mt_rand(0,sizeof($commune)-1)])
                         ->setMail(strtolower($adherent->getNom())."@gmail.com")
-                        ->setPassword($adherent->getNom());
+                        ->setPassword($this->passwordEncoder->encodePassword($adherent,$adherent->getNom()));
             $this->addReference("adherent".$i,$adherent);
             $this->manager->persist($adherent);
         }
@@ -57,7 +60,7 @@ class AppFixtures extends Fixture
         $adherent   ->setNom("HAMDI")
                         ->setPrenom("Akram")
                         ->setMail("admin@gmail.com")
-                        ->setPassword("HAMDI");
+                        ->setPassword($this->passwordEncoder->encodePassword($adherent,"HAMDI"));
         $this->manager->persist($adherent);
 
         $this->manager->flush();
