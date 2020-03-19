@@ -52,18 +52,28 @@ class AppFixtures extends Fixture
                         ->setTelephone($this->faker->phoneNumber())
                         ->setCodeCommune($commune[mt_rand(0,sizeof($commune)-1)])
                         ->setMail(strtolower($adherent->getNom())."@gmail.com")
-
                         ->setPassword($this->passwordEncoder->encodePassword($adherent,$adherent->getNom()));
             $this->addReference("adherent".$i,$adherent);
             $this->manager->persist($adherent);
         }
 
-        $adherent=new Adherent();
-        $adherent   ->setNom("HAMDI")
+        $adherentAdmin=new Adherent();
+        $rolesAdmin[]=Adherent::ROLE_ADMIN;
+        $adherentAdmin   ->setNom("HAMDI")
                         ->setPrenom("Akram")
                         ->setMail("admin@gmail.com")
+                        ->setRoles($rolesAdmin)
                         ->setPassword($this->passwordEncoder->encodePassword($adherent,"HAMDI"));
-        $this->manager->persist($adherent);
+        $this->manager->persist($adherentAdmin);
+
+        $adherentManager=new Adherent();
+        $rolesManager[]=Adherent::ROLE_MANAGER;
+        $adherentManager   ->setNom("Durand")
+                        ->setPrenom("Sophie")
+                        ->setMail("manager@gmail.com")
+                        ->setRoles($rolesManager)
+                        ->setPassword($this->passwordEncoder->encodePassword($adherent,"HAMDI"));
+        $this->manager->persist($adherentManager);
 
         $this->manager->flush();
     }
